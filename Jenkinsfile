@@ -11,8 +11,8 @@ pipeline{
 
     stage('Checkout Source'){
         steps{
-            git:'https://github.com/Ajyrajput-2811/nodeapp_jenkins_deployment.git',
-            credentialid: 'github_cred'
+            git 'https://github.com/Ajyrajput-2811/nodeapp_jenkins_deployment.git'
+            
         }
     }
 
