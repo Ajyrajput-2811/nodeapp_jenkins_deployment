@@ -1,65 +1,43 @@
-pipeline {
-  environment {
-    dockerimagename = "praveensingam1994/nodeapp"
+pipeline{
+
+ environment{
+    dockerimagename = "ajay6041/nodeapp"
     dockerImage = ""
-  }
-  
-  agent any
+ }
 
-  stages {
+ agent any
 
-// stage('Checkout Source') {
-//       steps {
-//         git 'https://github.com/praveen1994dec/kubernetes_Jenkins_deployment.git'
-//       }
-//     }
-        
-    stage('Build Container') {
-      steps {
-        echo 'Building Container..'
-                script {
-                    def dockerHome = tool 'MyDocker'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+ stages{
+
+    stage('git clone'){
+        steps{
+            git 'https://github.com/Ajyrajput-2811/nodeapp_jenkin_deployment.git'
+        }
+    }
+
+    stage('Build image'){
+        steps{
+            script{
+                dockerImage = docker.build dockerimagename
+            }
+        }
+    } 
+
+    stage('Pushing Image'){
+         environment{
+            registryCredential = 'dockerhublogin'
+         }         
+        steps{
+              script{
+                docker.withRegistry('https://registry.hub.docker.com',registryCredential){
+                    dockerImage.push("latest")
                 }
-      }
-    }
-
-    stage('Build image') {
-      steps{
-        script {
-          dockerImage = docker.build dockerimagename
+              }
         }
-      }
     }
-      
-          // stage('Build B') {
-          //    steps {
-          //        build job: "Sonar_Project", wait: true
-          //           }
-          //       }
+  
+ }
 
-    stage('Pushing Image') {
-      environment {
-               registryCredential = 'dockerhubcred'
-           }
-      steps{
-        script {
-          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-          dockerImage.push("${env.BUILD_NUMBER}")            
-          dockerImage.push("latest")        
-          }
-        }
-      }
-    }
 
-//     stage('Deploying App to Kubernetes') {
-//       steps {
-//         script {
-//           kubernetesDeploy(configs: "deploymentservice.yml", kubeconfigId: "kubernetes")
-//         }
-//       }
-//     }
-
-  }
 
 }
